@@ -18,13 +18,13 @@ NAME = 'TWPackage'
 DESCRIPTION = 'Python Wrapper for easily connecting to Twitch and setting up a chat bot.'
 URL = 'https://github.com/CubieDev/TwitchWebsocket'
 EMAIL = 'cubiegamedev@gmail.com'
-AUTHOR = 'Awesome Soul'
+AUTHOR = 'CubieDev'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'socket', 'types', 'threading', 'time'
+    'socket', 'types', 'threading', 'time',
 ]
 
 # What packages are optional?
