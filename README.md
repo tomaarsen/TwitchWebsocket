@@ -81,16 +81,30 @@ class MyBot:
         self.ws.add_capability(["membership", "tags", "commands"])
 
     def message_handler(self, m):
-        #handle message here
+        # Create your bot functionality here.
         pass
 
 if __name__ == "__main__":
     MyBot()
 ```
+| **Method with Parameters** | **Meaning** |
+| -------------------------- | ----------- |
+| ws = TwitchWebsocket(str host, str port, function message_handler, bool live) | message_handler is a function or method which will receive a Message object. If live is true, then any messages sent with ws.send_message() will appear in chat, otherwise they will just be printed out in the console. |
+| ws.login(str nick, str auth) | Logs in to Twitch using the username and authentication |
+| ws.join_channel(str channel) | Joins the channel |
+| ws.add_capability(str capability) | Adds a single [capability](https://dev.twitch.tv/docs/irc/membership/). |
+| ws.add_capability(list capabilities) | Adds all [capabilities](https://dev.twitch.tv/docs/irc/membership/) in the list. |
+| ws.leave() | Leave a channel |
+| ws.send_pong() | Send Pong. This is already done automatically upon receiving a Ping. |
+| ws.send_ping() | Send a Ping. Can be useful for testing connectivity. |
+| ws.send_message(str message) | Send message to Twitch Chat. | 
+| ws.send_whisper(str sender, str message) | Whisper sender with message |
 
 ---
 
 # Example
 
-I will upload some projects I've completed using this library, to give an idea how this library can be used.
+Here's a list of some personal projects of mine implementing this library.
+* [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
+* [TwitchPickUser](https://github.com/CubieDev/TwitchPickUser)
 
