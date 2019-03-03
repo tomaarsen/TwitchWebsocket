@@ -1,7 +1,7 @@
 
 import socket, types, threading, time
 
-from Message import Message
+from TwitchWebsocket.Message import Message
 
 class TwitchWebsocket(threading.Thread):
     def __init__(self, host, port, callback, live = False):
