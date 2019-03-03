@@ -92,5 +92,6 @@ if __name__ == "__main__":
 
 # Example
 
-I will upload some projects I've completed using this library, to give an idea how this library can be used.
+Here's a list of some personal projects of mine implementing this library.
+* [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
 
