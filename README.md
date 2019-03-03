@@ -94,4 +94,5 @@ if __name__ == "__main__":
 
 Here's a list of some personal projects of mine implementing this library.
 * [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
+* [TwitchPickUser](https://github.com/CubieDev/TwitchPickUser)
 
