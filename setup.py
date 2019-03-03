@@ -14,7 +14,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'TWPackage'
+NAME = 'TwitchWebsocket'
 DESCRIPTION = 'Python Wrapper for easily connecting to Twitch and setting up a chat bot.'
 URL = 'https://github.com/CubieDev/TwitchWebsocket'
 EMAIL = 'cubiegamedev@gmail.com'
