@@ -108,4 +108,5 @@ Here's a list of some personal projects of mine implementing this library.
 * [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
 * [TwitchPickUser](https://github.com/CubieDev/TwitchPickUser)
 * [TwitchPackCounter](https://github.com/CubieDev/TwitchPackCounter) (Streamer specific bot)
+* [TwitchDialCheck](https://github.com/CubieDev/TwitchDialCheck) (Streamer specific bot)
 
