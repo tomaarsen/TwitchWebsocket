@@ -114,7 +114,7 @@ class Settings:
             with open("settings.txt", "r") as f:
                 settings = f.read()
                 data = json.loads(settings)
-                bot.setSettings(data['Host'],
+                bot.set_settings(data['Host'],
                                 data['Port'],
                                 data['Channel'],
                                 data['Nickname'],
@@ -151,7 +151,7 @@ class MyBot:
         self.ws.join_channel(self.chan)
         self.ws.add_capability(["membership", "tags", "commands"])
 
-    def setSettings(self, host, port, chan, nick, auth):
+    def set_settings(self, host, port, chan, nick, auth):
         self.host = host
         self.port = port
         self.chan = chan
