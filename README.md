@@ -110,7 +110,7 @@ class Settings:
     def __init__(self, bot):
         try:
             # Try to load the file using json.
-            # And pass the data to the GoogleTranslate class instance if this succeeds.
+            # And pass the data to the MyBot class instance if this succeeds.
             with open("settings.txt", "r") as f:
                 settings = f.read()
                 data = json.loads(settings)
