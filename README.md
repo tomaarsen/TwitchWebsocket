@@ -101,6 +101,71 @@ if __name__ == "__main__":
 | ws.send_whisper(str sender, str message) | Whisper sender with message |
 
 ---
+# My personal Twitch Bot Template
+```python
+from TwitchWebsocket import TwitchWebsocket
+import json
+
+class Settings:
+    def __init__(self, bot):
+        try:
+            # Try to load the file using json.
+            # And pass the data to the GoogleTranslate class instance if this succeeds.
+            with open("settings.txt", "r") as f:
+                settings = f.read()
+                data = json.loads(settings)
+                bot.setSettings(data['Host'],
+                                data['Port'],
+                                data['Channel'],
+                                data['Nickname'],
+                                data['Authentication'])
+        except ValueError:
+            raise ValueError("Error in settings file.")
+        except FileNotFoundError:
+            # If the file is missing, create a standardised settings.txt file
+            # With all parameters required.
+            with open('settings.txt', 'w') as f:
+                standard_dict = {
+                                    "Host": "irc.chat.twitch.tv",
+                                    "Port": 6667,
+                                    "Channel": "#<channel>",
+                                    "Nickname": "<name>",
+                                    "Authentication": "oauth:<auth>",
+                                }
+                f.write(json.dumps(standard_dict, indent=4, separators=(',', ': ')))
+                raise ValueError("Please fix your settings.txt file that was just generated.")
+
+class MyBot:
+    def __init__(self):
+        self.host = None
+        self.port = None
+        self.chan = None
+        self.nick = None
+        self.auth = None
+        
+        # Fill previously initialised variables with data from the settings.txt file
+        Settings(self)
+
+        self.ws = TwitchWebsocket(self.host, self.port, self.message_handler, live=False)
+        self.ws.login(self.nick, self.auth)
+        self.ws.join_channel(self.chan)
+        self.ws.add_capability(["membership", "tags", "commands"])
+
+    def setSettings(self, host, port, chan, nick, auth):
+        self.host = host
+        self.port = port
+        self.chan = chan
+        self.nick = nick
+        self.auth = auth
+
+    def message_handler(self, m):
+        if m.type == "PRIVMSG":
+            pass
+
+if __name__ == "__main__":
+    MyBot()
+```
+---
 
 # Example
 
