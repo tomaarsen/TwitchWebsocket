@@ -130,7 +130,7 @@ class Settings:
                                     "Port": 6667,
                                     "Channel": "#<channel>",
                                     "Nickname": "<name>",
-                                    "Authentication": "oauth:<auth>",
+                                    "Authentication": "oauth:<auth>"
                                 }
                 f.write(json.dumps(standard_dict, indent=4, separators=(',', ': ')))
                 raise ValueError("Please fix your settings.txt file that was just generated.")
