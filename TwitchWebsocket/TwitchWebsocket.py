@@ -40,7 +40,10 @@ class TwitchWebsocket(threading.Thread):
         while True:
             try:
                 # Receive data from Twitch Websocket.
-                packet = self.conn.recv(4096).decode('UTF-8')
+                try:
+                    packet = self.conn.recv(4096).decode('UTF-8')
+                except UnicodeDecodeError:
+                    continue
                 self.data += packet
                 data_split = self.data.split("\r\n")
                 self.data = data_split.pop()
