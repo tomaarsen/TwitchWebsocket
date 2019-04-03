@@ -1,7 +1,9 @@
 
-import socket, types, threading, time
+import socket, types, threading, time, logging
 
 from TwitchWebsocket.Message import Message
+
+logger = logging.getLogger("TwitchWebsocket")
 
 class TwitchWebsocket(threading.Thread):
     def __init__(self, host, port, callback, live = False):
@@ -26,7 +28,6 @@ class TwitchWebsocket(threading.Thread):
         self.send_pong = lambda message="", command="PONG ": self._send(command, message)
         self.send_ping = lambda message="", command="PING ": self._send(command, message)
         self.send_message = lambda message, command="PRIVMSG ": self._send("{}{} :".format(command, self.chan.lower()), message) if self.live else print(message)
-        self.send_whisper = lambda sender, message: self.send_message(f"/w {sender} {message}")
         self.send_nick = lambda message, command="NICK ": self._send(command, message)
         self.send_pass = lambda message, command="PASS ": self._send(command, message)
         self.send_part = lambda message, command="PART ": self._send(command, message)
@@ -41,7 +42,7 @@ class TwitchWebsocket(threading.Thread):
             try:
                 # Receive data from Twitch Websocket.
                 try:
-                    packet = self.conn.recv(4096).decode('UTF-8')
+                    packet = self.conn.recv(8192).decode('UTF-8')
                 except UnicodeDecodeError:
                     continue
                 self.data += packet
@@ -60,7 +61,7 @@ class TwitchWebsocket(threading.Thread):
                     self.callback(m)
 
             except OSError as e:
-                print(f"[OSError: at {time.strftime('%X')}]: {e} -> {line}")
+                logging.error(f"[OSError: at {time.strftime('%X')}]: {e} -> {line}")
                 self._initialize_websocket()
                 if len(self.nick) > 0:
                     self.login(self.nick, self.auth)
@@ -86,6 +87,7 @@ class TwitchWebsocket(threading.Thread):
         self.conn.settimeout(330)
         
         self.conn.connect( (self.host, self.port) )
+        logging.debug("Websocket initialized.")
 
     def join_channel(self, chan):
         assert type(chan) == str and len(chan) > 0
