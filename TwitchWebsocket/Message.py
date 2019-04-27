@@ -94,9 +94,20 @@ class Message:
             return None
 
     def parse_message(self, split):
-        # Not everything we get sent has a message attached to it. If there is no message, we use None
-        self.message = split[0] if len(split) > 0 else ""
         #TODO Consider None vs ""
+
+        # Not everything we get sent has a message attached to it. If there is no message, we use ""
+        if len(split) > 0:
+            message = split[0]  
+            # If someone used /me, it reaches us as ╔ACTION: /me This is a test -> ╔ACTION This is a test╔ 
+            # In most cases we just want /me however, so I'll replace it.
+            # Note that the first and last character have id 1
+            if ord(message[0]) == 1 and message[1:7] == "ACTION":
+                # Replace ╔ACTION with /me, and remove the last ╔
+                message = "/me" + message[7:-1]
+            self.message = message
+        else:
+            self.message = ""
 
     def __str__(self):
         return (f"full_message: {self.full_message}\n\t" +
