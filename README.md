@@ -6,14 +6,16 @@ Python Wrapper for easily connecting to Twitch and setting up a chat bot.
 # Input
 This module will require the following information to be passed:
 
-| **Type**       | **Example**                            |
-| -------------- | -------------------------------------- |
-| Host           | "irc.chat.twitch.tv"                   |
-| Port           | 6667                                   |
-| Channel        | "#CubieDev"                            |
-| Nickname       | "CubieB0T"                             |
-| Authentication | "oauth:pivogip8ybletucqdz4pkhag6itbax" |
-| Callback       | Any function which receives one param  |
+| **Type**       | **Explanation ** | **Example**                            | **Variable Name** | **Required?** |
+| -------------- | ---------------- | ---------------------- | ----------------- | ------------- |
+| Host           | The socket host | "irc.chat.twitch.tv"                   | host | Y |
+| Port           | The socket port | 6667                                   | port | Y |
+| Channel        | The channel to connect to | "#CubieDev"                            | chan | Y |
+| Nickname       | The name of the bot | "CubieB0T"                             | nick | Y |
+| Authentication | The authentication of the bot | "oauth:pivogip8ybletucqdz4pkhag6itbax" | auth | Y |
+| Callback       | The function that gets called with all messages | Any function which receives one param  | callback | Y |
+| Capability | List of extra information to be requested from Twitch. (See Twitch docs) | ["membership", "tags", "commands"] | capability | N |
+| Live | Whether the outputs should actually be sent or only printed in the console | True | live | N |
 
 *Note that the example OAuth token is not an actual token, but merely a generated string to give an indication what it might look like.*
 
@@ -70,15 +72,17 @@ class MyBot:
         self.nick = "<user_name>"
         self.auth = "oauth:<authentication>"
         
-        # Initialise using a host, port, callback and whether the bot is live (if it should send messages)
-        # If live=False, then no chat messages will be sent, only printed out in the console.
-        self.ws = TwitchWebsocket(self.host, self.port, self.message_handler, live=True)
-        # Login using your nickname and authentication
-        self.ws.login(self.nick, self.auth)
-        # Join a channel
-        self.ws.join_channel(self.chan)
-        # Add a capability. See https://dev.twitch.tv/docs/irc/membership/ for capability documentation.
-        self.ws.add_capability(["membership", "tags", "commands"])
+        # Send along all required information, and the bot will start 
+        # sending messages to your callback function. (self.message_handler in this case)
+        self.ws = TwitchWebsocket(host=self.host, 
+                                  port=self.port,
+                                  chan=self.chan,
+                                  nick=self.nick,
+                                  auth=self.auth,
+                                  callback=self.message_handler,
+                                  capability=["membership", "tags", "commands"],
+                                  live=True)
+        # Any code after this will be executed after a KeyboardInterrupt
 
     def message_handler(self, m):
         # Create your bot functionality here.
@@ -146,10 +150,14 @@ class MyBot:
         # Fill previously initialised variables with data from the settings.txt file
         Settings(self)
 
-        self.ws = TwitchWebsocket(self.host, self.port, self.message_handler, live=False)
-        self.ws.login(self.nick, self.auth)
-        self.ws.join_channel(self.chan)
-        self.ws.add_capability(["membership", "tags", "commands"])
+        self.ws = TwitchWebsocket(host=self.host, 
+                                  port=self.port,
+                                  chan=self.chan,
+                                  nick=self.nick,
+                                  auth=self.auth,
+                                  callback=self.message_handler,
+                                  capability=["membership", "tags", "commands"],
+                                  live=False)
 
     def set_settings(self, host, port, chan, nick, auth):
         self.host = host
