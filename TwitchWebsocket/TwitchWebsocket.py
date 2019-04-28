@@ -6,18 +6,19 @@ from TwitchWebsocket.Message import Message
 logger = logging.getLogger("TwitchWebsocket")
 
 class TwitchWebsocket(threading.Thread):
-    def __init__(self, host, port, callback, live = False):
+    def __init__(self, host, port, chan, nick, auth, callback, capability = None, live = False):
         assert type(host) == str and type(port) == int and (type(callback) == types.FunctionType or type(callback) == types.MethodType)
         threading.Thread.__init__(self)
         self.name = "TwitchWebsocket"
+        self._stop_event = threading.Event()
 
         # Variables
         self.host = host
         self.port = port
-        self.chan = str()
-        self.nick = str()
-        self.auth = str()
-        self.capability = None
+        self.chan = chan
+        self.nick = nick
+        self.auth = auth
+        self.capability = capability
         self.callback = callback
         self.live = live
 
@@ -33,18 +34,37 @@ class TwitchWebsocket(threading.Thread):
         self.send_part = lambda message, command="PART ": self._send(command, message)
         self.send_req = lambda message, command="CAP REQ :twitch.tv/": self._send(command, message)
 
-        # Seting up the initial socket connection.
-        self._initialize_websocket()
-        self.start()
+        try:
+            # Seting up the initial socket connection.
+            self._initialize_websocket()
+            self.start()
+            self.login(self.nick, self.auth)
+            self.join_channel(self.chan)
+            if capability is not None:
+                self.add_capability(capability)
+            
+            while True: # Loop to ensure that the try except is still active
+                time.sleep(100)
+        except (KeyboardInterrupt, SystemExit):
+            # Stop the while loop in run()
+            self.stop()
+            # Cancel the self.conn.recv() in run()
+            self.conn.shutdown(socket.SHUT_WR)
+            # Join this thread
+            threading.Thread.join(self)
+
+    def stop(self):
+        self._stop_event.set()
+    
+    def stopped(self):
+        return self._stop_event.is_set()
 
     def run(self):
-        while True:
+        while not self.stopped():
             try:
                 # Receive data from Twitch Websocket.
-                try:
-                    packet = self.conn.recv(8192).decode('UTF-8')
-                except UnicodeDecodeError:
-                    continue
+                packet = self.conn.recv(8192).decode('UTF-8')
+
                 self.data += packet
                 data_split = self.data.split("\r\n")
                 self.data = data_split.pop()
