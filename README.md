@@ -82,6 +82,7 @@ class MyBot:
                                   callback=self.message_handler,
                                   capability=["membership", "tags", "commands"],
                                   live=True)
+        self.ws.start_bot()
         # Any code after this will be executed after a KeyboardInterrupt
 
     def message_handler(self, m):
@@ -158,6 +159,7 @@ class MyBot:
                                   callback=self.message_handler,
                                   capability=["membership", "tags", "commands"],
                                   live=False)
+        self.ws.start_bot()
 
     def set_settings(self, host, port, chan, nick, auth):
         self.host = host
