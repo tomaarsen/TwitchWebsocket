@@ -34,14 +34,15 @@ class TwitchWebsocket(threading.Thread):
         self.send_part = lambda message, command="PART ": self._send(command, message)
         self.send_req = lambda message, command="CAP REQ :twitch.tv/": self._send(command, message)
 
+    def start_bot(self):
         try:
             # Seting up the initial socket connection.
             self._initialize_websocket()
             self.start()
             self.login(self.nick, self.auth)
             self.join_channel(self.chan)
-            if capability is not None:
-                self.add_capability(capability)
+            if self.capability is not None:
+                self.add_capability(self.capability)
             
             while True: # Loop to ensure that the try except is still active
                 time.sleep(100)
