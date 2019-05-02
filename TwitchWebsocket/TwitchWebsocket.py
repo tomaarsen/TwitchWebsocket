@@ -44,8 +44,8 @@ class TwitchWebsocket(threading.Thread):
             if self.capability is not None:
                 self.add_capability(self.capability)
             
-            while True: # Loop to ensure that the try except is still active
-                time.sleep(100)
+            while not self.stopped(): # Loop to ensure that the try except is still active
+                time.sleep(1)
         except (KeyboardInterrupt, SystemExit):
             # Stop the while loop in run()
             self.stop()
