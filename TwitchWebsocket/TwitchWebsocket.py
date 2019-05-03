@@ -29,6 +29,7 @@ class TwitchWebsocket(threading.Thread):
         self.send_pong = lambda message="", command="PONG ": self._send(command, message)
         self.send_ping = lambda message="", command="PING ": self._send(command, message)
         self.send_message = lambda message, command="PRIVMSG ": self._send("{}{} :".format(command, self.chan.lower()), message) if self.live else print(message)
+        self.send_whisper = lambda sender, message: self.send_message(f"/w {sender} {message}")
         self.send_nick = lambda message, command="NICK ": self._send(command, message)
         self.send_pass = lambda message, command="PASS ": self._send(command, message)
         self.send_part = lambda message, command="PART ": self._send(command, message)
