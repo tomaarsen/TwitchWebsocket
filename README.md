@@ -182,6 +182,7 @@ if __name__ == "__main__":
 Here's a list of some personal projects of mine implementing this library.
 * [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
 * [TwitchMarkovChain](https://github.com/CubieDev/TwitchMarkovChain)
+* [TwitchRhymeBot](https://github.com/CubieDev/TwitchRhymeBot)
 * [TwitchCubieBot](https://github.com/CubieDev/TwitchCubieBot)
 * [TwitchDeathCounter](https://github.com/CubieDev/TwitchDeathCounter)
 * [TwitchSuggestDinner](https://github.com/CubieDev/TwitchSuggestDinner)
