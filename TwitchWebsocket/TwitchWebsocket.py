@@ -35,28 +35,34 @@ class TwitchWebsocket(threading.Thread):
         self.send_part = lambda message, command="PART ": self._send(command, message)
         self.send_req = lambda message, command="CAP REQ :twitch.tv/": self._send(command, message)
 
+    def start_nonblocking(self):
+        self._initialize_websocket()
+        self.start()
+        self.login(self.nick, self.auth)
+        self.join_channel(self.chan)
+        if self.capability is not None:
+            self.add_capability(self.capability)
+
     def start_bot(self):
         try:
             # Seting up the initial socket connection.
-            self._initialize_websocket()
-            self.start()
-            self.login(self.nick, self.auth)
-            self.join_channel(self.chan)
-            if self.capability is not None:
-                self.add_capability(self.capability)
+            self.start_nonblocking()
             
             while not self.stopped(): # Loop to ensure that the try except is still active
                 time.sleep(1)
         except (KeyboardInterrupt, SystemExit):
-            # Stop the while loop in run()
-            self.stop()
-            # Cancel the self.conn.recv() in run()
-            self.conn.shutdown(socket.SHUT_WR)
-            # Join this thread
-            threading.Thread.join(self)
+            self.join()
 
     def stop(self):
         self._stop_event.set()
+    
+    def join(self):
+        # Stop the while loop in run()
+        self.stop()
+        # Cancel the self.conn.recv() in run()
+        self.conn.shutdown(socket.SHUT_WR)
+        # Join this thread
+        threading.Thread.join(self)
     
     def stopped(self):
         return self._stop_event.is_set()
