@@ -98,7 +98,8 @@ class Message:
 
         # Not everything we get sent has a message attached to it. If there is no message, we use ""
         if len(split) > 0:
-            message = split[0]  
+            # If the message itself contains " :", then "split" will have be a list of multiple items. We will join them again.
+            message = " :".join(split)
             # If someone used /me, it reaches us as ╔ACTION: /me This is a test -> ╔ACTION This is a test╔ 
             # In most cases we just want /me however, so I'll replace it.
             # Note that the first and last character have id 1
