@@ -6,7 +6,7 @@ Python Wrapper for easily connecting to Twitch and setting up a chat bot.
 # Input
 This module will require the following information to be passed:
 
-| **Type**       | **Explanation ** | **Example**                            | **Variable Name** | **Required?** |
+| **Type**       | **Explanation** | **Example**                            | **Variable Name** | **Required?** |
 | -------------- | ---------------- | ---------------------- | ----------------- | ------------- |
 | Host           | The socket host | "irc.chat.twitch.tv"                   | host | Y |
 | Port           | The socket port | 6667                                   | port | Y |
@@ -185,6 +185,7 @@ Here's a list of some personal projects of mine implementing this library.
 * [TwitchRhymeBot](https://github.com/CubieDev/TwitchRhymeBot)
 * [TwitchCubieBotGUI](https://github.com/CubieDev/TwitchCubieBotGUI)
 * [TwitchCubieBot](https://github.com/CubieDev/TwitchCubieBot)
+* [TwitchWeather](https://github.com/CubieDev/TwitchWeather)
 * [TwitchDeathCounter](https://github.com/CubieDev/TwitchDeathCounter)
 * [TwitchSuggestDinner](https://github.com/CubieDev/TwitchSuggestDinner)
 * [TwitchPickUser](https://github.com/CubieDev/TwitchPickUser)
