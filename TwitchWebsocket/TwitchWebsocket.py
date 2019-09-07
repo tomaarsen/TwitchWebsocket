@@ -70,8 +70,12 @@ class TwitchWebsocket(threading.Thread):
     def run(self):
         while not self.stopped():
             try:
-                # Receive data from Twitch Websocket.
-                packet = self.conn.recv(8192).decode('UTF-8')
+                try:
+                    # Receive data from Twitch Websocket.
+                    packet = self.conn.recv(8192).decode('UTF-8')
+                except UnicodeDecodeError:
+                    # In case of unexpected end of data.
+                    continue
 
                 self.data += packet
                 data_split = self.data.split("\r\n")
@@ -105,17 +109,26 @@ class TwitchWebsocket(threading.Thread):
             raise RuntimeError("Socket connection broken, sent is 0")
 
     def _initialize_websocket(self):
-        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # We set the timeout to 330 seconds, as the PING from the Twitch server indicating
-        # That the connection is still live is sent roughly every 5 minutes it seems.
-        # the extra 30 seconds prevents us from checking the connection when it's not 
-        # needed.
-        
-        #TODO Error handle socket.gaierror: [Errno 11001] getaddrinfo failed and other errors
-        self.conn.settimeout(330)
-        
-        self.conn.connect( (self.host, self.port) )
-        logging.debug("Websocket initialized.")
+        while True:
+            try:
+                logging.debug("Attempting to initialize websocket connection.")
+                self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # We set the timeout to 330 seconds, as the PING from the Twitch server indicating
+                # That the connection is still live is sent roughly every 5 minutes it seems.
+                # the extra 30 seconds prevents us from checking the connection when it's not 
+                # needed.
+                
+                #TODO Error handle socket.gaierror: [Errno 11001] getaddrinfo failed and other errors
+                self.conn.settimeout(330)
+                
+                self.conn.connect( (self.host, self.port) )
+                logging.debug("Websocket connection initialized.")
+                # Only return if successful
+                return
+            except socket.gaierror:
+                # Sleep and retry if not successful
+                logging.debug("Failed to connect. Sleeping and retrying...")
+                time.sleep(5)
 
     def join_channel(self, chan):
         assert type(chan) == str and len(chan) > 0
