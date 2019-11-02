@@ -12,7 +12,7 @@ class Message:
     # +-------------------------------------------------------------------------------------------------------------------------------------[ FULL_MESSAGE ]-------------------------------------------------------------------------------------------------------------------------------------+
 
     def __init__(self, raw_data):
-        split = [d for d in raw_data.split(" :") if len(d) > 0]
+        split = [d for d in raw_data.split(" :")]
 
         # These parameters will be filled based onthe raw_data given
         self.full_message = raw_data
