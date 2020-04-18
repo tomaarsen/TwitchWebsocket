@@ -180,12 +180,14 @@ if __name__ == "__main__":
 # Example
 
 Here's a list of some personal projects of mine implementing this library.
-* [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
 * [TwitchMarkovChain](https://github.com/CubieDev/TwitchMarkovChain)
-* [TwitchRhymeBot](https://github.com/CubieDev/TwitchRhymeBot)
+* [TwitchAIDungeon](https://github.com/CubieDev/TwitchAIDungeon)
+* [TwitchGoogleTranslate](https://github.com/CubieDev/TwitchGoogleTranslate)
 * [TwitchCubieBotGUI](https://github.com/CubieDev/TwitchCubieBotGUI)
 * [TwitchCubieBot](https://github.com/CubieDev/TwitchCubieBot)
+* [TwitchRandomRecipe](https://github.com/CubieDev/TwitchRandomRecipe)
 * [TwitchUrbanDictionary](https://github.com/CubieDev/TwitchUrbanDictionary)
+* [TwitchRhymeBot](https://github.com/CubieDev/TwitchRhymeBot)
 * [TwitchWeather](https://github.com/CubieDev/TwitchWeather)
 * [TwitchDeathCounter](https://github.com/CubieDev/TwitchDeathCounter)
 * [TwitchSuggestDinner](https://github.com/CubieDev/TwitchSuggestDinner)
@@ -195,5 +197,5 @@ Here's a list of some personal projects of mine implementing this library.
 * [TwitchMMLevelQueueGUI](https://github.com/CubieDev/TwitchMMLevelQueueGUI) (Mario Maker 2 specific bot)
 * [TwitchPackCounter](https://github.com/CubieDev/TwitchPackCounter) (Streamer specific bot)
 * [TwitchDialCheck](https://github.com/CubieDev/TwitchDialCheck) (Streamer specific bot)
-* [TwitchSendMessage](https://github.com/CubieDev/TwitchSendMessage) (Not designed for non-programmers)
+* [TwitchSendMessage](https://github.com/CubieDev/TwitchSendMessage) (Meant for debugging purposes)
 
