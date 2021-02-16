@@ -9,7 +9,7 @@ from typing import Callable, List, Optional, Union
 from TwitchWebsocket.Message import Message
 
 logging.basicConfig(level=logging.INFO,
-                    format=f'[%(asctime)s] [%(name)-12s] [%(levelname)-8s] - %(message)s')
+                    format='[%(asctime)s] [%(name)-12s] [%(levelname)-8s] - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -36,12 +36,11 @@ class TwitchWebsocket(threading.Thread):
         `auth`: Twitch OAuth Token, e.g. "oauth:pivogip8ybletucqdz4pkhag6itbax".
         `callback`: The function or method that takes a `Message` object as parameter.
         `capability`: List of strings with extra information to be requested from Twitch. See docs.
-        `live`: Boolean stating whether output messages should be posted in chat or only in the console.
+        `live`: send_message() messages are posted in chat if True, otherwise only in the console.
         """
-        assert type(host) == str
-        assert type(port) == int
-        assert (type(callback) == types.FunctionType or
-                type(callback) == types.MethodType)
+        assert isinstance(host, str)
+        assert isinstance(port, int)
+        assert callable(callback)
         threading.Thread.__init__(self)
         # Thread parameters
         self.name = "TwitchWebsocket"
@@ -130,8 +129,8 @@ class TwitchWebsocket(threading.Thread):
                     "Received data could not be decoded. Skipping this data.")
                 continue
 
-            except OSError as e:
-                logger.error(f"[OSError: {e}] - Attempting to reconnect.")
+            except OSError as error:
+                logger.error(f"[OSError: {error}] - Attempting to reconnect.")
                 self.connect()
                 continue
 
@@ -140,14 +139,14 @@ class TwitchWebsocket(threading.Thread):
 
             # Iterate over seperately sent data.
             for line in data_split:
-                m = Message(line)
+                message = Message(line)
 
                 # We will do some handling depending on the message ourself,
                 # so the developer doesn't have to.
-                if m.type == "PING":
+                if message.type == "PING":
                     self.send_pong()
 
-                self.callback(m)
+                self.callback(message)
 
     def _send(self, command: str, message: str):
         """
@@ -293,7 +292,7 @@ class TwitchWebsocket(threading.Thread):
         `channel` must be a string and nonempty. May be prepended with "#",
         and can have any casing , e.g. "#Tom" is equivalent to "tom".
         """
-        assert type(channel) == str and channel
+        assert isinstance(channel, str) and channel
 
         self.send_join(channel.lower())
 
@@ -306,24 +305,25 @@ class TwitchWebsocket(threading.Thread):
         """
         self.send_part(channel.lower())
 
-    def leave(self):
+    def leave(self) -> None:
         """
         Deprecated version of `self.leave_channel(channel)`.
         """
         self.leave_channel(self.chan)
 
-    def login(self, nickname: str, authentication: str):
+    def login(self, nickname: str, authentication: str) -> None:
         """
         Login using a nickname and corresponding authentication.
         `nickname` and `authentication` must be a non-empty string.
         """
-        assert type(nickname) == type(authentication) == str
+        assert isinstance(nickname, str)
+        assert isinstance(authentication, str)
         assert nickname and authentication
 
         self.send_pass(authentication)
         self.send_nick(nickname.lower())
 
-    def add_capability(self, capability: Union[str, List[str]]):
+    def add_capability(self, capability: Union[str, List[str]]) -> None:
         """
         Add a capability on Twitch, i.e. request more information from Twitch.
         `capability` must be a string or a list of strings. Currently, valid
@@ -331,9 +331,9 @@ class TwitchWebsocket(threading.Thread):
         See https://dev.twitch.tv/docs/irc/guide#twitch-irc-capabilities for
         more information.
         """
-        assert type(capability) in [list, str]
+        assert isinstance(capability, (list, str))
 
-        if type(capability) == list:
+        if isinstance(capability, list):
             for cap in capability:
                 self.add_capability(cap.lower())
         else:
