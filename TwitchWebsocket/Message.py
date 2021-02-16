@@ -12,7 +12,7 @@ class Message:
     # +-------------------------------------------------------------------------------------------------------------------------------------[ FULL_MESSAGE ]-------------------------------------------------------------------------------------------------------------------------------------+
 
     def __init__(self, raw_data):
-        split = [d for d in raw_data.split(" :")]
+        split = raw_data.split(" :")
 
         # These parameters will be filled based onthe raw_data given
         self.full_message = raw_data
@@ -59,7 +59,6 @@ class Message:
         for fact in split.pop(0)[1:].split(";"):
             key, data = fact.split("=")
             self.tags[key] = data if len(data) > 0 else ""
-            # TODO Consider "" vs None
 
     def parse_user(self, command):
         # Get data before tmi.twitch.tv, then get data before !
@@ -73,19 +72,18 @@ class Message:
         self.type = command.split(" ")[1]\
             if "CAP * ACK" not in command else "CAP * ACK"
 
-    def parse_params(self, command, type):
+    def parse_params(self, command, message_type):
         # Get all the remaining parameters used in the command.
         # For example the channel you are attempting to join, or the user that is being modded.
         # We use the index of self.type to get everything listed after the type.
-        params = command[command.index(type) + len(type) + 1:]
+        params = command[command.index(message_type) + len(message_type) + 1:]
         self.params = params if len(params) > 0 else ""
-        # TODO Consider None vs ""
 
     def parse_channel(self, params):
         # We will look through self.params to find if one of the parameters is a channel.
-        if self.params != None:
+        if self.params is not None:
             chan_index = self.get_index(params, "#")
-            if chan_index != None:
+            if chan_index is not None:
                 self.channel = params[chan_index + 1:
                                       self.get_index(params, " ", chan_index)]
 
@@ -96,13 +94,13 @@ class Message:
             return None
 
     def parse_message(self, split):
-        # TODO Consider None vs ""
-
         # Not everything we get sent has a message attached to it. If there is no message, we use ""
         if len(split) > 0:
-            # If the message itself contains " :", then "split" will have be a list of multiple items. We will join them again.
+            # If the message itself contains " :", 
+            # then `split` will have be a list of multiple items. We will join them again.
             message = " :".join(split)
-            # If someone used /me, it reaches us as ╔ACTION: /me This is a test -> ╔ACTION This is a test╔
+            # If someone used /me, it reaches us as ╔ACTION, e.g.
+            # /me This is a test -> ╔ACTION This is a test╔
             # In most cases we just want /me however, so I'll replace it.
             # Note that the first and last character have id 1
             if ord(message[0]) == 1 and message[1:7] == "ACTION":
