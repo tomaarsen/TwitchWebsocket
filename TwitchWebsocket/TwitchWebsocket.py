@@ -9,17 +9,17 @@ logger = logging.getLogger(__name__)
 
 class TwitchWebsocket(threading.Thread):
     """
-    TwitchWebsocket class used for connecting a Twitch account to a Twitch channel's chat, 
+    TwitchWebsocket class used for connecting a Twitch account to a Twitch channel's chat,
     where it can read messages of many kinds, and post messages of its own.
     """
-    def __init__(self, 
-                 host: str, 
-                 port: str, 
-                 chan: str, 
-                 nick: str, 
-                 auth: str, 
-                 callback: Callable[[Message], None], 
-                 capability: Optional[Union[List[str], str]] = None, 
+    def __init__(self,
+                 host: str,
+                 port: str,
+                 chan: str,
+                 nick: str,
+                 auth: str,
+                 callback: Callable[[Message], None],
+                 capability: Optional[Union[List[str], str]] = None,
                  live: bool = True):
         """
         `host`: IRC Host, generally "irc.chat.twitch.tv".
@@ -52,19 +52,19 @@ class TwitchWebsocket(threading.Thread):
 
     def start_nonblocking(self):
         """
-        Start the bot in the background, 
+        Start the bot in the background,
         I.e. more code can be run immediately in the main thread. (hence, non-blocking)
         """
         self.start()
 
     def start_blocking(self):
         """
-        Start the bot in the foreground, 
+        Start the bot in the foreground,
         I.e. the bot needs to terminate before the main thread can continue. (hence, blocking)
         """
         self.start_nonblocking()
         self.wait()
-        
+
     def start_bot(self):
         """
         Deprecated version of `self.start_blocking()`.
@@ -94,7 +94,7 @@ class TwitchWebsocket(threading.Thread):
         The bot will stop receiving messages after the next message.
         """
         self._stop_event.set()
-    
+
     def stopped(self) -> bool:
         """
         Returns the status of the event that indicates if the bot should stop.
@@ -115,17 +115,17 @@ class TwitchWebsocket(threading.Thread):
             try:
                 # Receive data from Twitch Websocket.
                 data += self.conn.recv(8192).decode('UTF-8')
-            
+
             except UnicodeDecodeError:
                 # In case of unexpected end of data.
                 logger.warning("Received data could not be decoded. Skipping this data.")
                 continue
-            
+
             except OSError as e:
                 logger.error(f"[OSError: {e}] - Attempting to reconnect.")
                 self.connect()
                 continue
-            
+
             data_split = data.split("\r\n")
             data = data_split.pop()
 
@@ -149,11 +149,11 @@ class TwitchWebsocket(threading.Thread):
         sent = self.conn.send(bytes("{}{}\r\n".format(command, message), 'UTF-8'))
         if sent == 0:
             raise RuntimeError("Socket connection broken, sent is 0")
-    
+
     def send_join(self, channel: str) -> None:
         """
-        Send JOIN request over IRC to connect to `channel` their Twitch chat. 
-        
+        Send JOIN request over IRC to connect to `channel` their Twitch chat.
+
         `channel` must be a string and nonempty. May be prepended with "#",
         and can have any casing , e.g. "#Tom" is equivalent to "tom".
         """
@@ -161,25 +161,25 @@ class TwitchWebsocket(threading.Thread):
 
     def send_part(self, channel: str) -> None:
         """
-        Send PART request over IRC to disconnect from `channel` their Twitch chat. 
-        
+        Send PART request over IRC to disconnect from `channel` their Twitch chat.
+
         `channel` must be a string and nonempty. May be prepended with "#",
         and can have any casing , e.g. "#Tom" is equivalent to "tom".
         """
         self._send("PART ", channel)
-    
+
     def send_pong(self) -> None:
         """
         Send PONG over IRC to Twitch.
         """
         self._send("PONG ", "")
-    
+
     def send_ping(self) -> None:
         """
         Send PING over IRC to Twitch.
         """
         self._send("PING ", "")
-    
+
     def send_message(self, message: str) -> None:
         """
         Send `message` in the connected Twitch Chat using the connected Twitch account,
@@ -193,7 +193,7 @@ class TwitchWebsocket(threading.Thread):
 
     def send_whisper(self, user: str, message: str):
         """
-        Whisper `message` to `user` on Twitch using the connected Twitch account, 
+        Whisper `message` to `user` on Twitch using the connected Twitch account,
         but only if `self.live` is True.
         If this boolean is False, simply print out `/w user message`.
         """
@@ -201,14 +201,14 @@ class TwitchWebsocket(threading.Thread):
 
     def send_nick(self, nickname: str) -> None:
         """
-        Send a NICK message to Twitch to identify the 
+        Send a NICK message to Twitch to identify the
         bot with the username/nickname `nickname`.
         """
         self._send("NICK ", nickname)
 
     def send_pass(self, authentication):
         """
-        Send a PASS message to Twitch to authenticate the 
+        Send a PASS message to Twitch to authenticate the
         bot with the authentication `authentication`.
         """
         self._send("PASS ", authentication)
@@ -248,35 +248,35 @@ class TwitchWebsocket(threading.Thread):
                 yield val
             while True: # Yields 512, 512, 512, ...
                 yield val
-        
+
         reconnection_delay_gen = get_reconnection_delay()
 
         while True:
             try:
                 logger.info("Attempting to initialize websocket connection.")
                 self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                
+
                 # We set the timeout to 330 seconds, as the PING from the Twitch server indicating
                 # That the connection is still live is sent roughly every 5 minutes it seems.
-                # the extra 30 seconds prevents us from checking the connection when it's not 
+                # the extra 30 seconds prevents us from checking the connection when it's not
                 # needed.
                 self.conn.settimeout(330)
-                
+
                 self.conn.connect( (self.host, self.port) )
                 logger.info("Websocket connection initialized.")
                 # Only return if successful
                 return
-            
+
             except OSError:
                 # Sleep and retry if not successful
                 # reconnect_delay is 0, 1, 2, 4, 8, 16, ..., 512, 512, 512, ...
                 reconnect_delay = next(reconnection_delay_gen)
                 logger.error(f"Failed to connect. Sleeping for {reconnect_delay} seconds and retrying...")
                 time.sleep(reconnect_delay)
-            
+
     def join_channel(self, channel: str) -> None:
         """
-        Connect to the Twitch chat on the `channel` Twitch channel. 
+        Connect to the Twitch chat on the `channel` Twitch channel.
         Requires login using `self.login()`.
 
         `channel` must be a string and nonempty. May be prepended with "#",
@@ -284,12 +284,12 @@ class TwitchWebsocket(threading.Thread):
         """
         assert type(channel) == str and channel
 
-        
+
         self.send_join(channel.lower())
 
     def leave_channel(self, channel: str) -> None:
         """
-        Disconnect from the Twitch chat on the `channel` Twitch channel. 
+        Disconnect from the Twitch chat on the `channel` Twitch channel.
 
         `channel` must be a string and nonempty. May be prepended with "#",
         and can have any casing , e.g. "#Tom" is equivalent to "tom".
