@@ -80,23 +80,23 @@ class Message:
         self.params = params if len(params) > 0 else ""
 
     def parse_channel(self, params):
+        def get_index(string, substring, start=0):
+            try:
+                return string.index(substring, start)
+            except ValueError:
+                return None
+
         # We will look through self.params to find if one of the parameters is a channel.
         if self.params is not None:
-            chan_index = self.get_index(params, "#")
+            chan_index = get_index(params, "#")
             if chan_index is not None:
                 self.channel = params[chan_index + 1:
-                                      self.get_index(params, " ", chan_index)]
-
-    def get_index(self, string, substring, start=0):
-        try:
-            return string.index(substring, start)
-        except ValueError:
-            return None
+                                      get_index(params, " ", chan_index)]
 
     def parse_message(self, split):
         # Not everything we get sent has a message attached to it. If there is no message, we use ""
         if len(split) > 0:
-            # If the message itself contains " :", 
+            # If the message itself contains " :",
             # then `split` will have be a list of multiple items. We will join them again.
             message = " :".join(split)
             # If someone used /me, it reaches us as ╔ACTION, e.g.

@@ -1,6 +1,5 @@
 
 import socket
-import types
 import threading
 import time
 import logging
@@ -56,6 +55,7 @@ class TwitchWebsocket(threading.Thread):
         self.capability = capability
         self.callback = callback
         self.live = live
+        self.conn = None
 
     def start_nonblocking(self):
         """
@@ -90,7 +90,8 @@ class TwitchWebsocket(threading.Thread):
             # Stop the while loop in run()
             self.stop()
             # Cancel the self.conn.recv() in run()
-            self.conn.shutdown(socket.SHUT_WR)
+            if self.conn is not None:
+                self.conn.shutdown(socket.SHUT_WR)
             # Join this thread
             self.join()
             raise
@@ -264,7 +265,6 @@ class TwitchWebsocket(threading.Thread):
             try:
                 logger.info("Attempting to initialize websocket connection.")
                 self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
                 # We set the timeout to 330 seconds, as the PING from the Twitch server indicating
                 # That the connection is still live is sent roughly every 5 minutes it seems.
                 # the extra 30 seconds prevents us from checking the connection when it's not
