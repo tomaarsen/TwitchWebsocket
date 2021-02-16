@@ -59,7 +59,7 @@ class Message:
         for fact in split.pop(0)[1:].split(";"):
             key, data = fact.split("=")
             self.tags[key] = data if len(data) > 0 else ""
-            #TODO Consider "" vs None
+            # TODO Consider "" vs None
 
     def parse_user(self, command):
         # Get data before tmi.twitch.tv, then get data before !
@@ -70,7 +70,8 @@ class Message:
     def parse_type(self, command):
         # Commands types are the first word after tmi.twitch.tv,
         # with only one exception: CAP * ACK, which consists of multiple words.
-        self.type = command.split(" ")[1] if "CAP * ACK" not in command else "CAP * ACK"
+        self.type = command.split(" ")[1]\
+            if "CAP * ACK" not in command else "CAP * ACK"
 
     def parse_params(self, command, type):
         # Get all the remaining parameters used in the command.
@@ -78,14 +79,15 @@ class Message:
         # We use the index of self.type to get everything listed after the type.
         params = command[command.index(type) + len(type) + 1:]
         self.params = params if len(params) > 0 else ""
-        #TODO Consider None vs ""
+        # TODO Consider None vs ""
 
     def parse_channel(self, params):
         # We will look through self.params to find if one of the parameters is a channel.
         if self.params != None:
             chan_index = self.get_index(params, "#")
             if chan_index != None:
-                self.channel = params[chan_index + 1: self.get_index(params, " ", chan_index)]
+                self.channel = params[chan_index + 1:
+                                      self.get_index(params, " ", chan_index)]
 
     def get_index(self, string, substring, start=0):
         try:
@@ -94,13 +96,13 @@ class Message:
             return None
 
     def parse_message(self, split):
-        #TODO Consider None vs ""
+        # TODO Consider None vs ""
 
         # Not everything we get sent has a message attached to it. If there is no message, we use ""
         if len(split) > 0:
             # If the message itself contains " :", then "split" will have be a list of multiple items. We will join them again.
             message = " :".join(split)
-            # If someone used /me, it reaches us as ╔ACTION: /me This is a test -> ╔ACTION This is a test╔ 
+            # If someone used /me, it reaches us as ╔ACTION: /me This is a test -> ╔ACTION This is a test╔
             # In most cases we just want /me however, so I'll replace it.
             # Note that the first and last character have id 1
             if ord(message[0]) == 1 and message[1:7] == "ACTION":
@@ -111,11 +113,12 @@ class Message:
             self.message = ""
 
     def __str__(self):
-        return (f"full_message: {self.full_message}\n\t" +
-            f"tags: {self.tags}\n\t" +
-            f"command: {self.command}\n\t\t" +
-                f"user: {self.user}\n\t\t" +
-                f"type: {self.type}\n\t\t" +
-                f"params: {self.params}\n\t\t" +
-                f"channel: {self.channel}\n\t" +
-            f"message: {self.message}\n")
+        return f"""\
+full_message: {self.full_message}
+    tags: {self.tags}
+    command: {self.command}
+        user: {self.user}
+        type: {self.type}
+        params: {self.params}
+        channel: {self.channel}
+    message: {self.message}"""

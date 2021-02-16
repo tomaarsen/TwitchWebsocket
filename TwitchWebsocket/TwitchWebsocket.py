@@ -1,17 +1,24 @@
 
-import socket, types, threading, time, logging
+import socket
+import types
+import threading
+import time
+import logging
 from typing import Callable, List, Optional, Union
 
 from TwitchWebsocket.Message import Message
 
-logging.basicConfig(level=logging.INFO, format=f'[%(asctime)s] [%(name)-12s] [%(levelname)-8s] - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format=f'[%(asctime)s] [%(name)-12s] [%(levelname)-8s] - %(message)s')
 logger = logging.getLogger(__name__)
+
 
 class TwitchWebsocket(threading.Thread):
     """
     TwitchWebsocket class used for connecting a Twitch account to a Twitch channel's chat,
     where it can read messages of many kinds, and post messages of its own.
     """
+
     def __init__(self,
                  host: str,
                  port: str,
@@ -33,7 +40,8 @@ class TwitchWebsocket(threading.Thread):
         """
         assert type(host) == str
         assert type(port) == int
-        assert (type(callback) == types.FunctionType or type(callback) == types.MethodType)
+        assert (type(callback) == types.FunctionType or
+                type(callback) == types.MethodType)
         threading.Thread.__init__(self)
         # Thread parameters
         self.name = "TwitchWebsocket"
@@ -118,7 +126,8 @@ class TwitchWebsocket(threading.Thread):
 
             except UnicodeDecodeError:
                 # In case of unexpected end of data.
-                logger.warning("Received data could not be decoded. Skipping this data.")
+                logger.warning(
+                    "Received data could not be decoded. Skipping this data.")
                 continue
 
             except OSError as e:
@@ -146,7 +155,8 @@ class TwitchWebsocket(threading.Thread):
         In most cases, the public `send_...` methods should be used instead of this method,
         e.g. `self.send_message(message)` or `self.send_whisper(message, user)`
         """
-        sent = self.conn.send(bytes("{}{}\r\n".format(command, message), 'UTF-8'))
+        sent = self.conn.send(
+            bytes("{}{}\r\n".format(command, message), 'UTF-8'))
         if sent == 0:
             raise RuntimeError("Socket connection broken, sent is 0")
 
@@ -244,9 +254,9 @@ class TwitchWebsocket(threading.Thread):
             and ending at 512, which is repeated infinitely.
             """
             yield 0
-            for val in (2**i for i in range(10)): # Yields 1, 2, ..., 256, 512
+            for val in (2**i for i in range(10)):  # Yields 1, 2, ..., 256, 512
                 yield val
-            while True: # Yields 512, 512, 512, ...
+            while True:  # Yields 512, 512, 512, ...
                 yield val
 
         reconnection_delay_gen = get_reconnection_delay()
@@ -262,7 +272,7 @@ class TwitchWebsocket(threading.Thread):
                 # needed.
                 self.conn.settimeout(330)
 
-                self.conn.connect( (self.host, self.port) )
+                self.conn.connect((self.host, self.port))
                 logger.info("Websocket connection initialized.")
                 # Only return if successful
                 return
@@ -271,7 +281,8 @@ class TwitchWebsocket(threading.Thread):
                 # Sleep and retry if not successful
                 # reconnect_delay is 0, 1, 2, 4, 8, 16, ..., 512, 512, 512, ...
                 reconnect_delay = next(reconnection_delay_gen)
-                logger.error(f"Failed to connect. Sleeping for {reconnect_delay} seconds and retrying...")
+                logger.error(
+                    f"Failed to connect. Sleeping for {reconnect_delay} seconds and retrying...")
                 time.sleep(reconnect_delay)
 
     def join_channel(self, channel: str) -> None:
@@ -283,7 +294,6 @@ class TwitchWebsocket(threading.Thread):
         and can have any casing , e.g. "#Tom" is equivalent to "tom".
         """
         assert type(channel) == str and channel
-
 
         self.send_join(channel.lower())
 
