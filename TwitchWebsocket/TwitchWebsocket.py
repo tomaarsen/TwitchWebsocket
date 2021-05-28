@@ -7,8 +7,6 @@ from typing import Callable, List, Optional, Union
 
 from TwitchWebsocket.Message import Message
 
-logging.basicConfig(level=logging.INFO,
-                    format='[%(asctime)s] [%(name)-12s] [%(levelname)-8s] - %(message)s')
 logger = logging.getLogger(__name__)
 
 
