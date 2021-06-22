@@ -84,7 +84,7 @@ class TwitchWebsocket(threading.Thread):
             # Joining without a timeout will prevent the KeyboardInterrupt from triggering.
             while self.is_alive():
                 self.join(1)
-        except (KeyboardInterrupt, SystemExit):
+        except (KeyboardInterrupt, SystemExit) as e:
             # Stop the while loop in run()
             self.stop()
             # Cancel the self.conn.recv() in run()
@@ -92,7 +92,7 @@ class TwitchWebsocket(threading.Thread):
                 self.conn.shutdown(socket.SHUT_WR)
             # Join this thread
             self.join()
-            raise
+            logger.info(f"{e.__class__.__name__} detected - shutting down.")
 
     def stop(self):
         """
