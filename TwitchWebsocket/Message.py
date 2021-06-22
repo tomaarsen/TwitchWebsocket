@@ -1,5 +1,10 @@
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 class Message:
     # How messages are parsed, and what the Message class attributes represent:
     # @badges=subscriber/0;color=#00FF7F;display-name=CubieDev;emotes=;flags=;id=d315b88f-7813-467a-a1fc-418b00d4d5ee;mod=0;room-id=70624819;subscriber=1;tmi-sent-ts=1550060037421;turbo=0;user-id=94714716;user-type= :cubiedev!cubiedev@cubiedev.tmi.twitch.tv PRIVMSG #flackblag :Hello World!
@@ -24,34 +29,39 @@ class Message:
         self.channel = None
         self.message = None
 
-        if split[0][0] == "@":
-            self.parse_tags(split)
+        try:
+            if split[0][0] == "@":
+                self.parse_tags(split)
 
-        # Get full command as it is sent to us
-        # We remove the : that may be left over if the
-        # split on " :" didn't remove it.
-        self.command = split.pop(0).replace(":", "")
+            # Get full command as it is sent to us
+            # We remove the : that may be left over if the
+            # split on " :" didn't remove it.
+            self.command = split.pop(0).replace(":", "")
 
-        # For some reason PING messages have a different format than the rest
-        # of the messages Twitch sends us.
-        # We will handle this message differently for this reason
-        if self.command.startswith(("PING", "PONG")):
-            self.type = self.command[:4]
-            return
+            # For some reason PING messages have a different format than the rest
+            # of the messages Twitch sends us.
+            # We will handle this message differently for this reason
+            if self.command.startswith(("PING", "PONG")):
+                self.type = self.command[:4]
+                return
 
-        # Parse command into smaller bits
-        # :<user>!<user>@<user>.tmi.twitch.tv <type> <params>, or
-        # :<user>.tmi.twitch.tv <type> <params>, or
-        # :tmi.twitch.tv <type> <params>, or
-        # :jtv MODE #<channel> <params>
+            # Parse command into smaller bits
+            # :<user>!<user>@<user>.tmi.twitch.tv <type> <params>, or
+            # :<user>.tmi.twitch.tv <type> <params>, or
+            # :tmi.twitch.tv <type> <params>, or
+            # :jtv MODE #<channel> <params>
 
-        # Note, we chose to send these values as parameters to indicate dependencies
-        self.parse_user(self.command)
-        self.parse_type(self.command)
-        self.parse_params(self.command, self.type)
-        self.parse_channel(self.params)
+            # Note, we chose to send these values as parameters to indicate dependencies
+            self.parse_user(self.command)
+            self.parse_type(self.command)
+            self.parse_params(self.command, self.type)
+            self.parse_channel(self.params)
 
-        self.parse_message(split)
+            self.parse_message(split)
+        except Exception as e:
+            logger.error(
+                "The Message state at the time of the Exception:\n" + str(self))
+            raise e
 
     def parse_tags(self, split):
         # Get data in format @key=data; ... key=data;
