@@ -67,7 +67,7 @@ class Message:
         # Get data in format @key=data; ... key=data;
         # and transform to usable dictionary type under self.tags:
         for fact in split.pop(0)[1:].split(";"):
-            key, data = fact.split("=")
+            key, data = fact.split("=", 1)
             self.tags[key] = data if len(data) > 0 else ""
 
     def parse_user(self, command):
